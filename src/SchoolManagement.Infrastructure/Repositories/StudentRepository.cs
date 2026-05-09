@@ -1,7 +1,8 @@
-﻿using SchoolManagement.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SchoolManagement.Application.DTOs;
+using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Domain.Entities;
 using SchoolManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace SchoolManagement.Infrastructure.Repositories
@@ -15,9 +16,32 @@ namespace SchoolManagement.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<List<Student>> GetAllAsync()
+        public async Task<List<Student>> GetAllAsync(
+    StudentQueryParameters parameters)
         {
-            return await _context.Students.ToListAsync();
+            var query = _context.Students.AsQueryable();
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(parameters.Search))
+            {
+                query = query.Where(x =>
+                    x.FirstName.Contains(parameters.Search) ||
+                    x.LastName.Contains(parameters.Search));
+            }
+
+            // Filter
+            if (!string.IsNullOrWhiteSpace(parameters.Gender))
+            {
+                query = query.Where(x =>
+                    x.Gender == parameters.Gender);
+            }
+
+            // Pagination
+            query = query
+                .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+                .Take(parameters.PageSize);
+
+            return await query.ToListAsync();
         }
 
         public async Task<Student?> GetByIdAsync(int id)

@@ -16,9 +16,9 @@ namespace SchoolManagement.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllStudents()
+        public async Task<IActionResult> GetAllStudents([FromQuery] StudentQueryParameters parameters)
         {
-            var response = await _studentService.GetAllStudentsAsync();
+            var response = await _studentService.GetAllStudentsAsync(parameters);
 
             return Ok(response);
         }

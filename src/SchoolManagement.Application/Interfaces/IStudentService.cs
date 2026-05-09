@@ -8,7 +8,7 @@ namespace SchoolManagement.Application.Interfaces
 {
     public interface IStudentService
     {
-        Task<ApiResponse<IEnumerable<StudentDto>>> GetAllStudentsAsync();
+        Task<ApiResponse<IEnumerable<StudentDto>>> GetAllStudentsAsync(StudentQueryParameters parameters);
 
         Task<ApiResponse<StudentDto>> GetStudentByIdAsync(int id);
 

@@ -3,9 +3,6 @@ using SchoolManagement.Application.Common;
 using SchoolManagement.Application.DTOs;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SchoolManagement.Application.Services
 {
@@ -22,18 +19,19 @@ namespace SchoolManagement.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<StudentDto>>> GetAllStudentsAsync()
+        public async Task<ApiResponse<IEnumerable<StudentDto>>> GetAllStudentsAsync(
+            StudentQueryParameters parameters)
         {
-            var students = await _studentRepository.GetAllAsync();
+            var students = await _studentRepository.GetAllAsync(parameters);
 
-            var studentDtos = _mapper.Map<IEnumerable<StudentDto>>(students);
+            var studentDtos =
+                _mapper.Map<IEnumerable<StudentDto>>(students);
 
-            return new ApiResponse<IEnumerable<StudentDto>>
-            {
-                Success = true,
-                Message = "Students fetched successfully",
-                Data = studentDtos
-            };
+            return new ApiResponse<IEnumerable<StudentDto>>(
+                true,
+                "Students fetched successfully",
+                studentDtos
+            );
         }
 
         public async Task<ApiResponse<StudentDto>> GetStudentByIdAsync(int id)
@@ -42,24 +40,24 @@ namespace SchoolManagement.Application.Services
 
             if (student == null)
             {
-                return new ApiResponse<StudentDto>
-                {
-                    Success = false,
-                    Message = "Student not found"
-                };
+                return new ApiResponse<StudentDto>(
+                    false,
+                    "Student not found",
+                    null
+                );
             }
 
             var studentDto = _mapper.Map<StudentDto>(student);
 
-            return new ApiResponse<StudentDto>
-            {
-                Success = true,
-                Message = "Student fetched successfully",
-                Data = studentDto
-            };
+            return new ApiResponse<StudentDto>(
+                true,
+                "Student fetched successfully",
+                studentDto
+            );
         }
 
-        public async Task<ApiResponse<StudentDto>> CreateStudentAsync(CreateStudentDto dto)
+        public async Task<ApiResponse<StudentDto>> CreateStudentAsync(
+            CreateStudentDto dto)
         {
             var student = _mapper.Map<Student>(dto);
 
@@ -67,60 +65,61 @@ namespace SchoolManagement.Application.Services
 
             var studentDto = _mapper.Map<StudentDto>(student);
 
-            return new ApiResponse<StudentDto>
-            {
-                Success = true,
-                Message = "Student created successfully",
-                Data = studentDto
-            };
+            return new ApiResponse<StudentDto>(
+                true,
+                "Student created successfully",
+                studentDto
+            );
         }
 
-        public async Task<ApiResponse<string>> UpdateStudentAsync(int id, UpdateStudentDto dto)
+        public async Task<ApiResponse<string>> UpdateStudentAsync(
+            int id,
+            UpdateStudentDto dto)
         {
-            var existingStudent = await _studentRepository.GetByIdAsync(id);
+            var existingStudent =
+                await _studentRepository.GetByIdAsync(id);
 
             if (existingStudent == null)
             {
-                return new ApiResponse<string>
-                {
-                    Success = false,
-                    Message = "Student not found"
-                };
+                return new ApiResponse<string>(
+                    false,
+                    "Student not found",
+                    null
+                );
             }
 
             _mapper.Map(dto, existingStudent);
 
             await _studentRepository.UpdateAsync(existingStudent);
 
-            return new ApiResponse<string>
-            {
-                Success = true,
-                Message = "Student updated successfully",
-                Data = null
-            };
+            return new ApiResponse<string>(
+                true,
+                "Student updated successfully",
+                null
+            );
         }
 
         public async Task<ApiResponse<string>> DeleteStudentAsync(int id)
         {
-            var existingStudent = await _studentRepository.GetByIdAsync(id);
+            var existingStudent =
+                await _studentRepository.GetByIdAsync(id);
 
             if (existingStudent == null)
             {
-                return new ApiResponse<string>
-                {
-                    Success = false,
-                    Message = "Student not found"
-                };
+                return new ApiResponse<string>(
+                    false,
+                    "Student not found",
+                    null
+                );
             }
 
             await _studentRepository.DeleteAsync(existingStudent);
 
-            return new ApiResponse<string>
-            {
-                Success = true,
-                Message = "Student deleted successfully",
-                Data = null
-            };
+            return new ApiResponse<string>(
+                true,
+                "Student deleted successfully",
+                null
+            );
         }
     }
 }
