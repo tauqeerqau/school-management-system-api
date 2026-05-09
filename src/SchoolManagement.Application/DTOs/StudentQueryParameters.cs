@@ -13,5 +13,9 @@ namespace SchoolManagement.Application.DTOs
         public string? Search { get; set; }
 
         public string? Gender { get; set; }
+
+        public string? SortBy { get; set; }
+
+        public string? SortOrder { get; set; } = "asc";
     }
 }

@@ -23,15 +23,25 @@ namespace SchoolManagement.Application.Services
             StudentQueryParameters parameters)
         {
             var students = await _studentRepository.GetAllAsync(parameters);
-
+            var totalRecords = await _studentRepository.CountAsync(parameters);
             var studentDtos =
                 _mapper.Map<IEnumerable<StudentDto>>(students);
+
+            var pagination = new PaginationMetadata
+            {
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(
+        totalRecords / (double)parameters.PageSize)
+            };
 
             return new ApiResponse<IEnumerable<StudentDto>>(
                 true,
                 "Students fetched successfully",
-                studentDtos
-            );
+                studentDtos,
+                pagination
+                );
         }
 
         public async Task<ApiResponse<StudentDto>> GetStudentByIdAsync(int id)
@@ -43,6 +53,7 @@ namespace SchoolManagement.Application.Services
                 return new ApiResponse<StudentDto>(
                     false,
                     "Student not found",
+                    null,
                     null
                 );
             }
@@ -52,7 +63,8 @@ namespace SchoolManagement.Application.Services
             return new ApiResponse<StudentDto>(
                 true,
                 "Student fetched successfully",
-                studentDto
+                studentDto,
+                null
             );
         }
 
@@ -68,7 +80,8 @@ namespace SchoolManagement.Application.Services
             return new ApiResponse<StudentDto>(
                 true,
                 "Student created successfully",
-                studentDto
+                studentDto,
+                null
             );
         }
 
@@ -84,6 +97,7 @@ namespace SchoolManagement.Application.Services
                 return new ApiResponse<string>(
                     false,
                     "Student not found",
+                    null,
                     null
                 );
             }
@@ -95,6 +109,7 @@ namespace SchoolManagement.Application.Services
             return new ApiResponse<string>(
                 true,
                 "Student updated successfully",
+                null,
                 null
             );
         }
@@ -109,6 +124,7 @@ namespace SchoolManagement.Application.Services
                 return new ApiResponse<string>(
                     false,
                     "Student not found",
+                    null,
                     null
                 );
             }
@@ -118,6 +134,7 @@ namespace SchoolManagement.Application.Services
             return new ApiResponse<string>(
                 true,
                 "Student deleted successfully",
+                null,
                 null
             );
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolManagement.Application.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,14 +13,18 @@ namespace SchoolManagement.Application.Common
 
         public T Data { get; set; }
 
+        public PaginationMetadata? Pagination { get; set; }
+
         public ApiResponse(
             bool success,
             string message,
-            T data)
+            T data,
+            PaginationMetadata pagination)
         {
             Success = success;
             Message = message;
             Data = data;
+            Pagination = pagination;
         }
     }
 }

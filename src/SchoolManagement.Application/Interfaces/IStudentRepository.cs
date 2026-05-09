@@ -10,5 +10,6 @@ namespace SchoolManagement.Application.Interfaces
     : IGenericRepository<Student>
     {
         Task<List<Student>> GetAllAsync(StudentQueryParameters parameters);
+        Task<int> CountAsync(StudentQueryParameters parameters);
     }
 }
