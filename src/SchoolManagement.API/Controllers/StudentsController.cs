@@ -19,10 +19,6 @@ namespace SchoolManagement.API.Controllers
         public async Task<IActionResult> GetAllStudents()
         {
             var response = await _studentService.GetAllStudentsAsync();
-            var a = 6;
-            var b = 0;
-            var c = a / b;
-
             return Ok(response);
         }
 
