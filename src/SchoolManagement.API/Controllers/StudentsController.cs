@@ -19,6 +19,7 @@ namespace SchoolManagement.API.Controllers
         public async Task<IActionResult> GetAllStudents()
         {
             var response = await _studentService.GetAllStudentsAsync();
+
             return Ok(response);
         }
 
@@ -34,17 +35,25 @@ namespace SchoolManagement.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStudent(CreateStudentDto dto)
+        public async Task<IActionResult> CreateStudent(
+            [FromBody] CreateStudentDto dto)
         {
-            var response = await _studentService.CreateStudentAsync(dto);
+            var response =
+                await _studentService.CreateStudentAsync(dto);
 
-            return Ok(response);
+            return CreatedAtAction(
+                nameof(GetStudentById),
+                new { id = response.Data?.Id },
+                response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudent(int id, UpdateStudentDto dto)
+        public async Task<IActionResult> UpdateStudent(
+            int id,
+            [FromBody] UpdateStudentDto dto)
         {
-            var response = await _studentService.UpdateStudentAsync(id, dto);
+            var response =
+                await _studentService.UpdateStudentAsync(id, dto);
 
             if (!response.Success)
                 return NotFound(response);
@@ -55,7 +64,8 @@ namespace SchoolManagement.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStudent(int id)
         {
-            var response = await _studentService.DeleteStudentAsync(id);
+            var response =
+                await _studentService.DeleteStudentAsync(id);
 
             if (!response.Success)
                 return NotFound(response);
