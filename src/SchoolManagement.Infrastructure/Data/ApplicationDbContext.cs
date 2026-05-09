@@ -14,5 +14,6 @@ namespace SchoolManagement.Infrastructure.Data
         }
 
         public DbSet<Student> Students { get; set; }
+        public DbSet<AppUser> Users { get; set; }
     }
 }

@@ -11,15 +11,15 @@ namespace SchoolManagement.Application.Common
 
         public string Message { get; set; }
 
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
         public PaginationMetadata? Pagination { get; set; }
 
         public ApiResponse(
             bool success,
             string message,
-            T data,
-            PaginationMetadata pagination)
+            T? data,
+            PaginationMetadata? pagination)
         {
             Success = success;
             Message = message;
