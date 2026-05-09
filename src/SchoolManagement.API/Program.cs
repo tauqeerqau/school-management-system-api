@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using SchoolManagement.API.Middlewares;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Application.Mappings;
 using SchoolManagement.Application.Services;
@@ -30,6 +31,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentDtoValidator>(
 builder.Services.AddAutoMapper(typeof(StudentProfile));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
