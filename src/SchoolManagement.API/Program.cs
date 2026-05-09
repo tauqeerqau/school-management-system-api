@@ -8,8 +8,19 @@ using SchoolManagement.Application.Services;
 using SchoolManagement.Application.Validators;
 using SchoolManagement.Infrastructure.Data;
 using SchoolManagement.Infrastructure.Repositories;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 builder.Services.AddFluentValidationAutoValidation();
 
