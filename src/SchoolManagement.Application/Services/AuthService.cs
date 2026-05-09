@@ -1,12 +1,12 @@
-﻿using SchoolManagement.Application.Common;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using SchoolManagement.Application.Common;
 using SchoolManagement.Application.DTOs;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Domain.Entities;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SchoolManagement.Application.Services
@@ -92,9 +92,75 @@ namespace SchoolManagement.Application.Services
 
             var token = GenerateJwtToken(user);
 
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+
+            user.RefreshTokenExpiryTime =
+                DateTime.Now.AddDays(7);
+
+            await _userRepository.UpdateAsync(user);
+
             var response = new AuthResponseDto
             {
                 Token = token,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role,
+                RefreshToken = refreshToken
+            };
+
+            return new ApiResponse<AuthResponseDto>(
+                true,
+                "Login successful",
+                response,
+                null
+            );
+        }
+
+        public async Task<ApiResponse<AuthResponseDto>>
+    RefreshTokenAsync(
+        RefreshTokenRequestDto dto)
+        {
+            var user =
+                await _userRepository
+                    .GetByRefreshTokenAsync(dto.RefreshToken);
+
+            if (user == null)
+            {
+                return new ApiResponse<AuthResponseDto>(
+                    false,
+                    "Invalid refresh token",
+                    null,
+                    null
+                );
+            }
+
+            if (user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return new ApiResponse<AuthResponseDto>(
+                    false,
+                    "Refresh token expired",
+                    null,
+                    null
+                );
+            }
+
+            var newJwtToken = GenerateJwtToken(user);
+
+            var newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+
+            user.RefreshTokenExpiryTime =
+                DateTime.Now.AddDays(7);
+
+            await _userRepository.UpdateAsync(user);
+
+            var response = new AuthResponseDto
+            {
+                Token = newJwtToken,
+                RefreshToken = newRefreshToken,
                 Username = user.Username,
                 Email = user.Email,
                 Role = user.Role
@@ -102,7 +168,7 @@ namespace SchoolManagement.Application.Services
 
             return new ApiResponse<AuthResponseDto>(
                 true,
-                "Login successful",
+                "Token refreshed successfully",
                 response,
                 null
             );
@@ -145,6 +211,17 @@ namespace SchoolManagement.Application.Services
 
             return new JwtSecurityTokenHandler()
                 .WriteToken(token);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+
+            using var rng = RandomNumberGenerator.Create();
+
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

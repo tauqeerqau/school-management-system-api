@@ -9,5 +9,7 @@ namespace SchoolManagement.Application.Interfaces
         : IGenericRepository<AppUser>
     {
         Task<AppUser?> GetByEmailAsync(string email);
+
+        Task<AppUser?> GetByRefreshTokenAsync(string refreshToken);
     }
 }

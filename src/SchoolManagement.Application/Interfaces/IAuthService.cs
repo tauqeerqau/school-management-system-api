@@ -11,5 +11,7 @@ namespace SchoolManagement.Application.Interfaces
         Task<ApiResponse<string>> RegisterAsync(RegisterDto dto);
 
         Task<ApiResponse<AuthResponseDto>> LoginAsync(LoginDto dto);
+
+        Task<ApiResponse<AuthResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto dto);
     }
 }

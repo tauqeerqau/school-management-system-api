@@ -24,5 +24,12 @@ namespace SchoolManagement.Infrastructure.Repositories
             return await _context.Users
                 .FirstOrDefaultAsync(x => x.Email == email);
         }
+
+        public async Task<AppUser?> GetByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(
+                    x => x.RefreshToken == refreshToken);
+        }
     }
 }
