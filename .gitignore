@@ -3,4 +3,5 @@ obj/
 .vs/
 *.user
 *.suo
+src/SchoolManagement.API/Logs/
 appsettings.Development.json
