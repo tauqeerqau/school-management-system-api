@@ -1,6 +1,9 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagement.Application.Interfaces;
+using SchoolManagement.Application.Mappings;
 using SchoolManagement.Application.Services;
+using SchoolManagement.Application.Validators;
 using SchoolManagement.Infrastructure.Data;
 using SchoolManagement.Infrastructure.Repositories;
 
@@ -19,7 +22,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentDtoValidator>();
 
+builder.Services.AddAutoMapper(typeof(StudentProfile));
 
 var app = builder.Build();
 
