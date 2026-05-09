@@ -7,17 +7,15 @@ using SchoolManagement.Infrastructure.Data;
 
 namespace SchoolManagement.Infrastructure.Repositories
 {
-    public class StudentRepository : IStudentRepository
+    public class StudentRepository
+    : GenericRepository<Student>,
+      IStudentRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public StudentRepository(ApplicationDbContext context)
+        public StudentRepository(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<List<Student>> GetAllAsync(
-    StudentQueryParameters parameters)
+        public async Task<List<Student>> GetAllAsync(StudentQueryParameters parameters)
         {
             var query = _context.Students.AsQueryable();
 
@@ -44,32 +42,5 @@ namespace SchoolManagement.Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Student?> GetByIdAsync(int id)
-        {
-            return await _context.Students.FindAsync(id);
-        }
-
-        public async Task<Student> AddAsync(Student student)
-        {
-            _context.Students.Add(student);
-
-            await _context.SaveChangesAsync();
-
-            return student;
-        }
-
-        public async Task UpdateAsync(Student student)
-        {
-            _context.Students.Update(student);
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Student student)
-        {
-            _context.Students.Remove(student);
-
-            await _context.SaveChangesAsync();
-        }
     }
 }

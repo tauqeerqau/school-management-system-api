@@ -7,15 +7,8 @@ using System.Text;
 namespace SchoolManagement.Application.Interfaces
 {
     public interface IStudentRepository
+    : IGenericRepository<Student>
     {
         Task<List<Student>> GetAllAsync(StudentQueryParameters parameters);
-
-        Task<Student?> GetByIdAsync(int id);
-
-        Task<Student> AddAsync(Student student);
-
-        Task UpdateAsync(Student student);
-
-        Task DeleteAsync(Student student);
     }
 }
