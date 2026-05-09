@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Application.Mappings;
@@ -8,6 +9,8 @@ using SchoolManagement.Infrastructure.Data;
 using SchoolManagement.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddControllers();
 
