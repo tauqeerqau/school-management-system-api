@@ -52,7 +52,7 @@ namespace SchoolManagement.Application.Features.Students.Handlers
                     totalRecords /
                     (double)request.Parameters.PageSize)
             };
-
+            await Task.Delay(2000);
             return new ApiResponse<IEnumerable<StudentDto>>(
                 true,
                 "Students fetched successfully",
