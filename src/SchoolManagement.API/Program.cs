@@ -1,10 +1,12 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolManagement.API.Middlewares;
+using SchoolManagement.Application.Features.Students.Handlers;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Application.Mappings;
 using SchoolManagement.Application.Services;
@@ -12,6 +14,7 @@ using SchoolManagement.Application.Validators;
 using SchoolManagement.Infrastructure.Data;
 using SchoolManagement.Infrastructure.Repositories;
 using Serilog;
+using System.Reflection;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
@@ -107,6 +110,10 @@ builder.Services
             };
     });
 builder.Services.AddAuthorization();
+
+builder.Services.AddMediatR(
+    cfg => cfg.RegisterServicesFromAssembly(
+        typeof(GetStudentsQueryHandler).Assembly));
 
 var app = builder.Build();
 

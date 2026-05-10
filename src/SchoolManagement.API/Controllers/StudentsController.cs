@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagement.Application.DTOs;
+using SchoolManagement.Application.Features.Students.Queries;
 using SchoolManagement.Application.Interfaces;
 
 namespace SchoolManagement.API.Controllers
@@ -11,16 +13,21 @@ namespace SchoolManagement.API.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;
+        private readonly IMediator _mediator;
 
-        public StudentsController(IStudentService studentService)
+        public StudentsController(IMediator mediator, IStudentService studentService)
         {
+            _mediator = mediator;
             _studentService = studentService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllStudents([FromQuery] StudentQueryParameters parameters)
         {
-            var response = await _studentService.GetAllStudentsAsync(parameters);
+            var query = new GetStudentsQuery(parameters);
+
+            var response =
+                await _mediator.Send(query);
 
             return Ok(response);
         }
