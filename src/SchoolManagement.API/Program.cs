@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolManagement.API.Middlewares;
+using SchoolManagement.Application.Behaviors;
 using SchoolManagement.Application.Features.Students.Handlers;
 using SchoolManagement.Application.Interfaces;
 using SchoolManagement.Application.Mappings;
@@ -114,6 +115,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddMediatR(
     cfg => cfg.RegisterServicesFromAssembly(
         typeof(GetStudentsQueryHandler).Assembly));
+
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(LoggingBehavior<,>));
 
 var app = builder.Build();
 
