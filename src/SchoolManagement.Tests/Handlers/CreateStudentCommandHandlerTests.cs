@@ -15,27 +15,27 @@ namespace SchoolManagement.Tests.Handlers
 {
     public class CreateStudentCommandHandlerTests
     {
-        private readonly Mock<IStudentRepository>
-            _studentRepositoryMock;
+        private readonly Mock<IStudentRepository> _studentRepositoryMock;
 
-        private readonly Mock<IMapper>
-            _mapperMock;
+        private readonly Mock<IMapper> _mapperMock;
+        
+        private readonly Mock<ICacheService> _cacheServiceMock;
 
-        private readonly CreateStudentCommandHandler
-            _handler;
+        private readonly CreateStudentCommandHandler _handler;
 
         public CreateStudentCommandHandlerTests()
         {
-            _studentRepositoryMock =
-                new Mock<IStudentRepository>();
+            _studentRepositoryMock = new Mock<IStudentRepository>();
 
-            _mapperMock =
-                new Mock<IMapper>();
+            _mapperMock = new Mock<IMapper>();
+
+            _cacheServiceMock = new Mock<ICacheService>();
 
             _handler =
                 new CreateStudentCommandHandler(
                     _studentRepositoryMock.Object,
-                    _mapperMock.Object);
+                    _mapperMock.Object,
+                    _cacheServiceMock.Object);
         }
 
         [Fact]
