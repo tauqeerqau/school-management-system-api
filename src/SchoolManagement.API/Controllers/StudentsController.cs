@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SchoolManagement.Application.DTOs;
 using SchoolManagement.Application.Features.Students.Queries;
 using SchoolManagement.Application.Interfaces;
@@ -11,6 +12,7 @@ namespace SchoolManagement.API.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [EnableRateLimiting("fixed")]
     [Authorize]
     public class StudentsController : ControllerBase
     {

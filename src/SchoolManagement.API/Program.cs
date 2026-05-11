@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -19,6 +20,7 @@ using Serilog;
 using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
+using System.Threading.RateLimiting;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -157,6 +159,26 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(
+        "fixed",
+        limiterOptions =>
+        {
+            limiterOptions.PermitLimit = 5;
+
+            limiterOptions.Window =
+                TimeSpan.FromMinutes(1);
+
+            limiterOptions.QueueProcessingOrder =
+                QueueProcessingOrder.OldestFirst;
+
+            limiterOptions.QueueLimit = 2;
+        });
+
+    options.RejectionStatusCode = 429;
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -170,6 +192,9 @@ app.UseMiddleware<ExceptionMiddleware>();
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
