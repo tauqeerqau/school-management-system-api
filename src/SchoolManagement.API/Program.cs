@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -146,6 +147,15 @@ builder.Services.AddTransient(
 builder.Services.AddTransient(
     typeof(IPipelineBehavior<,>),
     typeof(PerformanceBehavior<,>));
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    options.AssumeDefaultVersionWhenUnspecified = true;
+
+    options.ReportApiVersions = true;
+});
 
 var app = builder.Build();
 
