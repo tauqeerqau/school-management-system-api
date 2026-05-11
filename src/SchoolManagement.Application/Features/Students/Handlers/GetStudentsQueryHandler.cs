@@ -19,46 +19,68 @@ namespace SchoolManagement.Application.Features.Students.Handlers
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IMapper _mapper;
+        private readonly ICacheService _cacheService;
 
         public GetStudentsQueryHandler(
             IStudentRepository studentRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ICacheService cacheService)
         {
             _studentRepository = studentRepository;
             _mapper = mapper;
+            _cacheService = cacheService;
         }
 
         public async Task<ApiResponse<IEnumerable<StudentDto>>> Handle(
-            GetStudentsQuery request,
-            CancellationToken cancellationToken)
+    GetStudentsQuery request,
+    CancellationToken cancellationToken)
         {
-            var students =
-                await _studentRepository
-                    .GetAllAsync(request.Parameters);
+            // Create unique cache key
 
-            var totalRecords =
-                await _studentRepository
-                    .CountAsync(request.Parameters);
+            var cacheKey =
+                $"students_" +
+                $"{request.Parameters.PageNumber}_" +
+                $"{request.Parameters.PageSize}_" +
+                $"{request.Parameters.Search}_" +
+                $"{request.Parameters.Gender}_" +
+                $"{request.Parameters.SortBy}_" +
+                $"{request.Parameters.SortOrder}";
+
+            // Try getting data from Redis
+
+            var cachedResponse =
+                await _cacheService.GetAsync<
+                    ApiResponse<IEnumerable<StudentDto>>>(cacheKey);
+
+            if (cachedResponse != null)
+            {
+                return cachedResponse;
+            }
+
+            // Fetch from database
+
+            var students =
+                await _studentRepository.GetAllAsync(
+                    request.Parameters);
 
             var studentDtos =
                 _mapper.Map<IEnumerable<StudentDto>>(students);
 
-            var pagination = new PaginationMetadata
-            {
-                PageNumber = request.Parameters.PageNumber,
-                PageSize = request.Parameters.PageSize,
-                TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(
-                    totalRecords /
-                    (double)request.Parameters.PageSize)
-            };
-            await Task.Delay(2000);
-            return new ApiResponse<IEnumerable<StudentDto>>(
-                true,
-                "Students fetched successfully",
-                studentDtos,
-                pagination
-            );
+            var response =
+                new ApiResponse<IEnumerable<StudentDto>>(
+                    true,
+                    "Students fetched successfully",
+                    studentDtos,
+                    null);
+
+            // Save to Redis
+
+            await _cacheService.SetAsync(
+                cacheKey,
+                response,
+                TimeSpan.FromMinutes(5));
+
+            return response;
         }
     }
 }

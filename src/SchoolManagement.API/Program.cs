@@ -15,6 +15,7 @@ using SchoolManagement.Application.Validators;
 using SchoolManagement.Infrastructure.Data;
 using SchoolManagement.Infrastructure.Repositories;
 using Serilog;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
 
@@ -80,10 +81,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration =
+        builder.Configuration["Redis:ConnectionString"];
+});
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    sp =>
+    {
+        var configuration =
+            builder.Configuration[
+                "Redis:ConnectionString"];
+
+        return ConnectionMultiplexer.Connect(
+            configuration!);
+    });
+
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateStudentDtoValidator>();
 
